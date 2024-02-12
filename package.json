@@ -1,0 +1,22 @@
+{
+  "name": "solidity-basic",
+  "version": "1.0.0",
+  "description": "Learning the basic stuf for smart contract development <3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "solidity",
+    "smart-contract",
+    "evm",
+    "ethereum"
+  ],
+  "repository": "https://github.com/F-Dupraz/solidity-basic.git",
+  "author": "Fabricio Angel Dupraz <duprazfabricio@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.5"
+  }
+}
