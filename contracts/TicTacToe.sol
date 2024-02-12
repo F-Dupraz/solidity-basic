@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity >= 0.7.0 < 0.9.0;
 
+import "./Achievment.sol";
+import "./Currency.sol";
+
 contract TicTacToe {
 
     struct Match {
@@ -12,9 +15,13 @@ contract TicTacToe {
     }
 
     Match[] matches;
+    mapping(address => uint) gamesWon;
+    Achievment achievment;
+    Currency currency;
 
-    constructor() {
-        //
+    constructor(address achievmentContract, address achievmentCurrency) {
+        achievment = Achievment(achievmentContract);
+        currency = Currency(achievmentCurrency);
     }
 
     function startMatch(address my_player_1, address my_player_2) public returns(uint) {
@@ -37,6 +44,7 @@ contract TicTacToe {
         require(!isFinished(my_match));
 
         saveMove(match_id, horizontal, vertical);
+        my_match = matches[match_id];
 
         uint winner = getWinner(my_match);
         saveWinner(winner, match_id);
@@ -48,6 +56,25 @@ contract TicTacToe {
         if(winner != 0) {
             if(winner == 1) matches[match_id].winner = matches[match_id].player_1;
             else matches[match_id].winner = matches[match_id].player_2;
+
+            gamesWon[matches[match_id].winner]++;
+            if(gamesWon[matches[match_id].winner] == 5) {
+                achievment.MyEmit(matches[match_id].winner);
+            }
+
+            bool spaceAvaiable;
+            for(uint i = 0; i < 3; i++) {
+                for(uint j = 0; j < 3; j++) {
+                    if(matches[match_id].moves[i][j] == 0) spaceAvaiable = true;
+                }
+            }
+            if(spaceAvaiable) achievment.MyEmit(matches[match_id].winner);
+
+            if(achievment.balanceOf(matches[match_id].winner) > 0) {
+                currency.MyEmit(2, matches[match_id].winner);
+            } else {
+                currency.MyEmit(1, matches[match_id].winner);
+            }
         }
     }
 
@@ -63,13 +90,13 @@ contract TicTacToe {
 
     function getWinner(Match memory my_match) private pure returns(uint) {
         uint winner = chekLine(my_match.moves, 0, 0, 1, 1, 2, 2);
-        if(winner != 0) winner = chekLine(my_match.moves, 0, 2, 1, 1, 2, 0);
-        if(winner != 0) winner = chekLine(my_match.moves, 0, 0, 0, 1, 0, 2);
-        if(winner != 0) winner = chekLine(my_match.moves, 1, 0, 1, 1, 1, 2);
-        if(winner != 0) winner = chekLine(my_match.moves, 2, 0, 2, 1, 2, 2);
-        if(winner != 0) winner = chekLine(my_match.moves, 0, 0, 1, 0, 2, 0);
-        if(winner != 0) winner = chekLine(my_match.moves, 0, 1, 1, 1, 2, 1);
-        if(winner != 0) winner = chekLine(my_match.moves, 0, 2, 1, 2, 2, 2);
+        if(winner == 0) winner = chekLine(my_match.moves, 0, 2, 1, 1, 2, 0);
+        if(winner == 0) winner = chekLine(my_match.moves, 0, 0, 0, 1, 0, 2);
+        if(winner == 0) winner = chekLine(my_match.moves, 1, 0, 1, 1, 1, 2);
+        if(winner == 0) winner = chekLine(my_match.moves, 2, 0, 2, 1, 2, 2);
+        if(winner == 0) winner = chekLine(my_match.moves, 0, 0, 1, 0, 2, 0);
+        if(winner == 0) winner = chekLine(my_match.moves, 0, 1, 1, 1, 2, 1);
+        if(winner == 0) winner = chekLine(my_match.moves, 0, 2, 1, 2, 2, 2);
 
         return winner;
     }
