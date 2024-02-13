@@ -12,7 +12,7 @@ contract TicTacToe is VRFConsumerBaseV2 {
         address player_1;
         address player_2;
         address winner;
-        uint[3][3] moves;
+        uint2[3][3] moves;
         address last_move;
         uint request_id;
     }
@@ -61,7 +61,7 @@ contract TicTacToe is VRFConsumerBaseV2 {
       else matches[match_id].last_move = matches[match_id].player_2;
     }
 
-    function play(uint match_id, uint horizontal, uint vertical) public {
+    function play(uint match_id, uint horizontal, uint vertical) external {
         Match memory my_match = matches[match_id];
         require(msg.sender == my_match.player_1 || msg.sender == my_match.player_2, "You are not a player!");
         require(horizontal >= 0 && horizontal < 3);
@@ -111,7 +111,7 @@ contract TicTacToe is VRFConsumerBaseV2 {
         else matches[match_id].moves[h][v] = 2;
     }
 
-    function chekLine(uint[3][3] memory my_moves, uint x1, uint y1, uint x2, uint y2, uint x3, uint y3) private pure returns(uint) {
+    function chekLine(uint2[3][3] memory my_moves, uint x1, uint y1, uint x2, uint y2, uint x3, uint y3) private pure returns(uint) {
         if((my_moves[x1][y1] == my_moves[x2][y2]) && (my_moves[x2][y2] == my_moves[x3][y3])) return my_moves[x1][x2];
         else return 0;
     }
